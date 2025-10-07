@@ -1,13 +1,13 @@
 
 import { Request } from 'express';
-import { User } from '../entities/User.entity';
+import { User, RoleEnumType } from '../entities/User.entity';
 import { AppDataSource } from '../utils/data-source';
 import { UserDetails } from '../entities/userDetails.entity';
 import { createUser, findUserByEmail } from './user.service';
 
 const studentRepository = AppDataSource.getRepository(UserDetails);
 
-export const createStudent = async (input: Partial<UserDetails>, currentUser: User) => {
+export const createStudent = async (input: Partial<UserDetails> & { email?: string; password?: string }, currentUser: User) => {
   // Check if email already exists
   const email = input.email || `${input.firstName?.toLowerCase() || 'student'}.${input.lastName?.toLowerCase() || 'user'}@edtech.com`;
   const existingUser = await findUserByEmail({ email });
@@ -36,7 +36,7 @@ export const createStudent = async (input: Partial<UserDetails>, currentUser: Us
     userName: uniqueUserName,
     email: email,
     password: input.password || 'student12345', // Use provided password or default
-    role: 'student',
+    role: RoleEnumType.STUDENT,
     status: 'active',
     verified: true,
     verificationCode: 'verified', // Default verification code
@@ -69,7 +69,7 @@ export const getStudent = async (userId: string) => {
   });
 };
 
-export const updateStudent = async (studentId: string, input: Partial<UserDetails>) => {
+export const updateStudent = async (studentId: string, input: Partial<UserDetails> & { email?: string; password?: string }) => {
   const student = await getStudent(studentId);
   if (!student) {
     throw new Error('Student not found');
