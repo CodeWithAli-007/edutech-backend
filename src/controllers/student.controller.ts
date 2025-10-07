@@ -69,7 +69,7 @@ export const getStudentHandler = async (
   next: NextFunction
 ) => {
   try {
-    const student = await getStudent(req.params.studentId);
+    const student = await getStudent(req.params.userId);
     if (!student) {
       return next(new AppError(404, 'studentId not found'));
     }
@@ -111,13 +111,13 @@ export const updateStudentHandler = async (
   next: NextFunction
 ) => {
   try {
-    const student = await getStudent(req.params.studentId);
+    const student = await getStudent(req.params.userId);
 
     if (!student) {
       return next(new AppError(404, 'Update student with that ID not found'));
     }
 
-    const updatedStudent = await updateStudent(req.params.studentId, mapResponseToUserDetails(req.body));
+    const updatedStudent = await updateStudent(req.params.userId, mapResponseToUserDetails(req.body));
 
     res.status(200).json({
       status: 'success',
@@ -137,7 +137,7 @@ export const deleteStudentHandler = async (
   next: NextFunction
 ) => {
   try {
-    const student = await getStudent(req.params.studentId);
+    const student = await getStudent(req.params.userId);
 
     if (!student) {
       return next(new AppError(404, 'Student with that ID not found'));
