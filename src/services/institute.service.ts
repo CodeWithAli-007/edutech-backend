@@ -1,6 +1,6 @@
 
 import { Request } from 'express';
-import { User } from '../entities/User.entity';
+import { User, RoleEnumType } from '../entities/User.entity';
 import { AppDataSource } from '../utils/data-source';
 import { Institute } from '../entities/institute.entity';
 import { createUser, findUserByEmail } from './user.service';
@@ -37,7 +37,7 @@ export const createInstitute = async (input: Partial<Institute>, user: User) => 
       userName: `${input.name?.toLowerCase().replace(/\s+/g, '_') || 'institute'}_${Math.random().toString(36).substring(2, 8)}`,
       email: input.email,
       password: (input as any).password || 'institute12345',
-      role: 'institute_admin',
+      role: RoleEnumType.INSTITUTE_ADMIN,
       status: 'active',
       verified: true,
       verificationCode: 'verified',
