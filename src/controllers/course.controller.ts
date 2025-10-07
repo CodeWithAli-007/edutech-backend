@@ -7,7 +7,7 @@ import {
   deleteCourse,
   assignTeacherToCourse 
 } from '../services/course.service';
-import { AppError } from '../utils/appError';
+import AppError from '../utils/appError';
 
 export const createCourseHandler = async (
   req: Request,

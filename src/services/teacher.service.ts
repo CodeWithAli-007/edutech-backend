@@ -1,13 +1,13 @@
 
 import { Request } from 'express';
-import { User } from '../entities/User.entity';
+import { User, RoleEnumType } from '../entities/User.entity';
 import { AppDataSource } from '../utils/data-source';
 import { UserDetails } from '../entities/userDetails.entity';
 import { createUser } from './user.service';
 
 const teacherRepository = AppDataSource.getRepository(UserDetails);
 
-export const createTeacher = async (input: Partial<UserDetails>, currentUser: User) => {
+export const createTeacher = async (input: Partial<UserDetails> & { email?: string; password?: string }, currentUser: User) => {
   // Generate UUID if not provided
   const generateUUID = () => {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -29,7 +29,7 @@ export const createTeacher = async (input: Partial<UserDetails>, currentUser: Us
     userName: uniqueUserName,
     email: input.email || `${input.firstName?.toLowerCase() || 'teacher'}.${input.lastName?.toLowerCase() || 'user'}@edtech.com`,
     password: input.password || 'teacher12345', // Use provided password or default
-    role: 'teacher',
+    role: RoleEnumType.TEACHER,
     status: 'active',
     verified: true,
     verificationCode: 'verified', // Default verification code
@@ -109,7 +109,7 @@ export const findTeachers = async (req: Request, user: User) => {
   return await builder.getMany();
 };
 
-export const updateTeacher = async (teacherId: string, input: Partial<UserDetails>) => {
+export const updateTeacher = async (teacherId: string, input: Partial<UserDetails> & { email?: string; password?: string }) => {
   const teacher = await getTeacher(teacherId);
   if (!teacher) {
     throw new Error('Teacher not found');

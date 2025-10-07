@@ -4,7 +4,7 @@ import { findUserById } from '../services/user.service';
 import AppError from '../utils/appError';
 import { createTeacher, findTeachers, getTeacher, updateTeacher, deleteTeacher } from '../services/teacher.service';
 import { CreateUserDetailsInput, DeleteUserDetailsInput, GetUserDetailsInput, mapResponseToUserDetails, UpdateUserDetailsInput } from '../schemas/userDetails.schema';
-import { DeleteTeacherInput } from '../schemas/teacher.schema';
+import { GetTeacherInput, UpdateTeacherInput, DeleteTeacherInput } from '../schemas/teacher.schema';
 
 export const createTeacherHandler = async (
   req: Request<{}, {}, CreateUserDetailsInput>,
@@ -48,7 +48,7 @@ export const createTeacherHandler = async (
 };
 
 export const getTeacherHandler = async (
-  req: Request<GetUserDetailsInput>,
+  req: Request<GetTeacherInput>,
   res: Response,
   next: NextFunction
 ) => {
@@ -90,7 +90,7 @@ export const getTeachersHandler = async (
 };
 
 export const updateTeacherHandler = async (
-  req: Request<UpdateUserDetailsInput['params'], {}, UpdateUserDetailsInput['body']>,
+  req: Request<UpdateTeacherInput['params'], {}, UpdateTeacherInput['body']>,
   res: Response,
   next: NextFunction
 ) => {
@@ -115,7 +115,7 @@ export const updateTeacherHandler = async (
 };
 
 export const deleteTeacherHandler = async (
-  req: Request<DeleteTeacherInput['params']>,
+  req: Request<DeleteTeacherInput>,
   res: Response,
   next: NextFunction
 ) => {
