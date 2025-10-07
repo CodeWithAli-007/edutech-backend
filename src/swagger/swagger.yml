@@ -1,0 +1,2045 @@
+openapi: 3.0.3
+info:
+  title: edTech APIs Doumentation
+  version: 1.0.0
+  description: API documentation for OpenAPI Node.js project
+
+servers:
+  - url: "{baseUrl}" # Placeholder for the base URL
+    description: Base URL
+
+paths:
+  # Auth Endpoints
+  /api/auth/register:
+    post:
+      summary: Register a new user (v1)
+      tags:
+        - Authorization
+      operationId: registerUserV1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "201":
+          description: User registered successfully, JWT token returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  token:
+                    type: string
+        "400":
+          description: Bad request, invalid schema
+
+  /api/auth/login:
+    post:
+      summary: Login to get a JWT token (v1)
+      tags:
+        - Authorization
+      operationId: loginUserV1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Successfully logged in, JWT token returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        "400":
+          description: Invalid credentials
+
+  # User Endpoints (Protected)
+  /api/users/me:
+    get:
+      summary: Get current user profile
+      tags:
+        - User
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: [] # Protected endpoint
+      responses:
+        "200":
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          user_id:
+                            type: string
+                          userName:
+                            type: string
+                          email:
+                            type: string
+                          role:
+                            type: string
+                          status:
+                            type: string
+                          verified:
+                            type: boolean
+                          instituteId:
+                            type: string
+                            nullable: true
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "404":
+          description: User not found
+
+  # API V1 Endpoints (Protected)
+  /api/v1/institutes:
+    get:
+      summary: Get all Institutes (v1)
+      tags:
+        - Institute
+      operationId: getAllInstitutesV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      responses:
+        "200":
+          description: Successfully retrieved Institutes
+          content:
+            application/json:
+              schema:
+                #AnyValue: {}
+                items:
+                  type: object
+                  # $ref: "#/components/schemas/Institute"
+        "400":
+          description: Bad request, invalid schema
+        "404":
+          description: resource not found
+    post:
+      summary: Create a new institute (v1)
+      tags:
+        - Institute
+      operationId: createResourceV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Institute"
+      responses:
+        "201":
+          description: Institute created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  updatedBy:
+                    type: string
+        "400":
+          description: Bad request, invalid schema
+        "404":
+          description: resource not found
+
+  /api/v1/institutes/{instituteId}:
+    parameters:
+      - name: instituteId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: Get institute by ID (v1)
+      tags:
+        - Institute
+      operationId: getInstituteByIdV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      responses:
+        "200":
+          description: Successfully retrieved institute
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      institute:
+                        $ref: "#/components/schemas/Institute"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "404":
+          description: Institute not found
+    put:
+      summary: Update an existing institute (v1)
+      tags:
+        - Institute
+      operationId: updateInstituteV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Institute"
+      responses:
+        "200":
+          description: Successfully updated institute
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      institute:
+                        $ref: "#/components/schemas/Institute"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "404":
+          description: Institute not found
+    patch:
+      summary: Partially update an existing institute (v1)
+      tags:
+        - Institute
+      operationId: patchInstituteV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Institute"
+      responses:
+        "200":
+          description: Successfully updated institute
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      institute:
+                        $ref: "#/components/schemas/Institute"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "404":
+          description: Institute not found
+    delete:
+      summary: Delete an institute (v1)
+      tags:
+        - Institute
+      operationId: deleteInstituteV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      responses:
+        "204":
+          description: Successfully deleted institute
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden – Invalid or missing JWT token
+        "404":
+          description: Institute not found
+
+  #STudents apis
+  # API V1 Endpoints (Protected)
+  /api/v1/students:
+    get:
+      summary: Get all students (v1)
+      tags:
+        - Student
+      operationId: getAllStudentsV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      responses:
+        "200":
+          description: Successfully retrieved students
+          content:
+            application/json:
+              schema:
+                items:
+                  type: object
+                  $ref: "#/components/schemas/UserDetails"
+        "400":
+          description: Bad request, invalid schema
+        "404":
+          description: resource not found
+    post:
+      summary: Create a new student
+      tags:
+        - Student
+      operationId: createStudentV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserDetails" # your request DTO
+      responses:
+        "201":
+          description: Student created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: student created successfully
+                  data:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                      firstName:
+                        type: string
+                      updatedBy:
+                        type: string
+        "400":
+          description: Bad request, invalid schema
+        "404":
+          description: resource not found
+        "409":
+          description: Duplicate student
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: student with that name already exist
+  /api/v1/students/{studentId}:
+    parameters:
+      - name: studentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: Get a specific student by ID (v1)
+      tags:
+        - Student
+      operationId: getStudentV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      responses:
+        "200":
+          description: Successfully retrieved student
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      student:
+                        $ref: "#/components/schemas/UserDetails"
+        "403":
+          description: Forbidden – Invalid or missing JWT token
+        "404":
+          description: Student not found
+    put:
+      summary: Update an existing student (v1)
+      tags:
+        - Student
+      operationId: updateStudentV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserDetails"
+      responses:
+        "200":
+          description: Successfully updated resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDetails"
+        "403":
+          description: Forbidden – Invalid or missing JWT token
+        "404":
+          description: Resource not found
+
+    patch:
+      summary: Modify an existing resource (v1)
+      tags:
+        - Student
+      operationId: modifyResourceV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserDetails"
+      responses:
+        "200":
+          description: Successfully modified resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDetails"
+        "403":
+          description: Forbidden – Invalid or missing JWT token
+        "404":
+          description: Resource not found
+
+    delete:
+      summary: Delete an existing resource (v1)
+      tags:
+        - Student
+      operationId: deleteResourceV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      responses:
+        "200":
+          description: Successfully deleted student
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        "403":
+          description: Forbidden – Invalid or missing JWT token
+        "404":
+          description: Resource not found
+  #Teachers endpoints
+  # API V1 Endpoints (Protected)
+  /api/v1/teachers:
+    get:
+      summary: Get all teachers (v1)
+      tags:
+        - Teacher
+      operationId: getAllTeachersV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      responses:
+        "200":
+          description: Successfully retrieved teachers
+          content:
+            application/json:
+              schema:
+                items:
+                  type: object
+                  $ref: "#/components/schemas/UserDetails"
+        "400":
+          description: Bad request, invalid schema
+        "404":
+          description: resource not found
+    post:
+      summary: Create a new teacher record (v1)
+      tags:
+        - Teacher
+      operationId: createTeaherV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserDetails"
+      responses:
+        "201":
+          description: teacher record created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: teacher created successfully
+                  data:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                      firstName:
+                        type: string
+                      updatedBy:
+                        type: string
+        "400":
+          description: Bad request, invalid schema
+        "404":
+          description: resource not found
+        "409":
+          description: Duplicate Teacher
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: Teacher with that name already exist
+
+  /api/v1/teachers/{teacherId}:
+    parameters:
+      - name: teacherId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The teacher ID
+
+    get:
+      summary: Get a teacher by ID (v1)
+      tags:
+        - Teacher
+      operationId: getTeacherV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      responses:
+        "200":
+          description: Successfully retrieved teacher
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      teacher:
+                        $ref: "#/components/schemas/UserDetails"
+        "403":
+          description: Forbidden – Invalid or missing JWT token
+        "404":
+          description: Teacher not found
+
+    put:
+      summary: Update an existing teacher (v1)
+      tags:
+        - Teacher
+      operationId: updateTeacherV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserDetails"
+      responses:
+        "200":
+          description: Successfully updated resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDetails"
+        "403":
+          description: Forbidden – Invalid or missing JWT token
+        "404":
+          description: Resource not found
+
+    patch:
+      summary: Modify an existing resource (v1)
+      tags:
+        - Teacher
+      operationId: modifyResourceV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserDetails"
+      responses:
+        "200":
+          description: Successfully modified resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDetails"
+        "403":
+          description: Forbidden – Invalid or missing JWT token
+        "404":
+          description: Resource not found
+
+    delete:
+      summary: Delete an existing teacher (v1)
+      tags:
+        - Teacher
+      operationId: deleteTeacherV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      parameters:
+        - name: teacherId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The teacher ID
+      responses:
+        "200":
+          description: Successfully deleted student
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        "403":
+          description: Forbidden – Invalid or missing JWT token
+        "404":
+          description: Resource not found
+
+  # Course Endpoints (Protected)
+  /api/v1/courses:
+    get:
+      summary: Get all courses (v1)
+      tags:
+        - Course
+      operationId: getAllCoursesV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      responses:
+        "200":
+          description: Courses retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  results:
+                    type: integer
+                    example: 5
+                  data:
+                    type: object
+                    properties:
+                      courses:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Course"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Insufficient permissions
+
+    post:
+      summary: Create a new course (v1)
+      tags:
+        - Course
+      operationId: createCourseV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Course"
+      responses:
+        "201":
+          description: Course created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      course:
+                        $ref: "#/components/schemas/Course"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Insufficient permissions
+
+  /api/v1/courses/{courseId}:
+    parameters:
+      - name: courseId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      summary: Get a specific course (v1)
+      tags:
+        - Course
+      operationId: getCourseV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      responses:
+        "200":
+          description: Course retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      course:
+                        $ref: "#/components/schemas/Course"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "404":
+          description: Course not found
+
+    patch:
+      summary: Update a course (v1)
+      tags:
+        - Course
+      operationId: updateCourseV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Course"
+      responses:
+        "200":
+          description: Course updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Course updated successfully"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "404":
+          description: Course not found
+
+    delete:
+      summary: Delete a course (v1)
+      tags:
+        - Course
+      operationId: deleteCourseV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      responses:
+        "200":
+          description: Course deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Course deleted successfully"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "404":
+          description: Course not found
+
+  /api/v1/courses/{courseId}/assign-teacher:
+    parameters:
+      - name: courseId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    patch:
+      summary: Assign teacher to course (v1)
+      tags:
+        - Course
+      operationId: assignTeacherToCourseV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                teacherId:
+                  type: string
+                  format: uuid
+                  example: "123e4567-e89b-12d3-a456-426614174000"
+      responses:
+        "200":
+          description: Teacher assigned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Teacher assigned to course successfully"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "404":
+          description: Course not found
+
+  # Lesson Endpoints (Protected)
+  /api/v1/lessons:
+    get:
+      summary: Get all lessons for authenticated teacher (v1)
+      tags:
+        - Lesson
+      operationId: getAllLessonsV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Search lessons by title
+        - name: courseId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Filter lessons by course ID
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [active, inactive]
+          description: Filter lessons by status
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [title, createdAt, position]
+          description: Sort lessons by field
+        - name: order
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+          description: Sort order
+      responses:
+        "200":
+          description: Lessons retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  results:
+                    type: integer
+                    example: 5
+                  data:
+                    type: object
+                    properties:
+                      lessons:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Lesson"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Only teachers can view lessons
+
+    post:
+      summary: Create a new lesson (v1)
+      tags:
+        - Lesson
+      operationId: createLessonV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLessonRequest"
+      responses:
+        "201":
+          description: Lesson created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Lesson created successfully"
+                  data:
+                    type: object
+                    properties:
+                      lesson:
+                        $ref: "#/components/schemas/Lesson"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Only teachers can create lessons
+        "404":
+          description: Course not found
+
+  /api/v1/lessons/courses:
+    get:
+      summary: Get teacher's courses for lesson creation (v1)
+      tags:
+        - Lesson
+      operationId: getTeacherCoursesV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      responses:
+        "200":
+          description: Teacher courses retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  results:
+                    type: integer
+                    example: 3
+                  data:
+                    type: object
+                    properties:
+                      courses:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Course"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Only teachers can view their courses
+
+  /api/v1/lessons/course/{courseId}:
+    parameters:
+      - name: courseId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      summary: Get lessons by course ID (v1)
+      tags:
+        - Lesson
+      operationId: getLessonsByCourseV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      responses:
+        "200":
+          description: Lessons retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  results:
+                    type: integer
+                    example: 5
+                  data:
+                    type: object
+                    properties:
+                      lessons:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Lesson"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Only teachers can view lessons for their courses
+        "404":
+          description: Course not found
+
+  /api/v1/lessons/{lessonId}:
+    parameters:
+      - name: lessonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      summary: Get a specific lesson (v1)
+      tags:
+        - Lesson
+      operationId: getLessonV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      responses:
+        "200":
+          description: Lesson retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      lesson:
+                        $ref: "#/components/schemas/Lesson"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "404":
+          description: Lesson not found
+
+    patch:
+      summary: Update a lesson (v1)
+      tags:
+        - Lesson
+      operationId: updateLessonV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLessonRequest"
+      responses:
+        "200":
+          description: Lesson updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Lesson updated successfully"
+                  data:
+                    type: object
+                    properties:
+                      lesson:
+                        $ref: "#/components/schemas/Lesson"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Only teachers can update lessons
+        "404":
+          description: Lesson not found
+
+    put:
+      summary: Update a lesson (v1)
+      tags:
+        - Lesson
+      operationId: updateLessonPutV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLessonRequest"
+      responses:
+        "200":
+          description: Lesson updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Lesson updated successfully"
+                  data:
+                    type: object
+                    properties:
+                      lesson:
+                        $ref: "#/components/schemas/Lesson"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Only teachers can update lessons
+        "404":
+          description: Lesson not found
+
+    delete:
+      summary: Delete a lesson (v1)
+      tags:
+        - Lesson
+      operationId: deleteLessonV1
+      security:
+        - BearerAuth: [] # Protected endpoint
+      responses:
+        "200":
+          description: Lesson deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Lesson deleted successfully"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Only teachers can delete lessons
+        "404":
+          description: Lesson not found
+
+  # Enrollment Endpoints
+  /api/v1/enrollments:
+    get:
+      summary: Get all enrollments for institute admin
+      tags:
+        - Enrollments
+      operationId: getEnrollments
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: string
+            default: "1"
+        - name: limit
+          in: query
+          schema:
+            type: string
+            default: "10"
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Enrollments retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  results:
+                    type: integer
+                    example: 5
+                  total:
+                    type: integer
+                    example: 25
+                  page:
+                    type: integer
+                    example: 1
+                  limit:
+                    type: integer
+                    example: 10
+                  totalPages:
+                    type: integer
+                    example: 3
+                  data:
+                    type: object
+                    properties:
+                      enrollments:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Enrollment'
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Only institute admins can view enrollments
+
+    post:
+      summary: Create a new enrollment
+      tags:
+        - Enrollments
+      operationId: createEnrollment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEnrollmentRequest'
+      responses:
+        "201":
+          description: Enrollment created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Student enrolled successfully"
+                  data:
+                    type: object
+                    properties:
+                      enrollment:
+                        $ref: '#/components/schemas/Enrollment'
+        "400":
+          description: Bad request - Invalid data
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Only institute admins can create enrollments
+        "404":
+          description: Student or course not found
+        "409":
+          description: Student already enrolled in this course
+
+  /api/v1/enrollments/students:
+    get:
+      summary: Get available students for enrollment
+      tags:
+        - Enrollments
+      operationId: getAvailableStudents
+      responses:
+        "200":
+          description: Available students retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  results:
+                    type: integer
+                    example: 10
+                  data:
+                    type: object
+                    properties:
+                      students:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/User'
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Only institute admins can view students
+
+  /api/v1/enrollments/courses:
+    get:
+      summary: Get available courses for enrollment
+      tags:
+        - Enrollments
+      operationId: getAvailableCourses
+      responses:
+        "200":
+          description: Available courses retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  results:
+                    type: integer
+                    example: 5
+                  data:
+                    type: object
+                    properties:
+                      courses:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            course_id:
+                              type: string
+                              format: uuid
+                            title:
+                              type: string
+                            description:
+                              type: string
+                            user:
+                              $ref: '#/components/schemas/User'
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Only institute admins can view courses
+
+  /api/v1/enrollments/student/{studentId}:
+    get:
+      summary: Get enrollments by student ID
+      tags:
+        - Enrollments
+      operationId: getEnrollmentsByStudent
+      parameters:
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Student enrollments retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  results:
+                    type: integer
+                    example: 3
+                  data:
+                    type: object
+                    properties:
+                      enrollments:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Enrollment'
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Access denied
+
+  /api/v1/enrollments/course/{courseId}:
+    get:
+      summary: Get enrollments by course ID
+      tags:
+        - Enrollments
+      operationId: getEnrollmentsByCourse
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Course enrollments retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  results:
+                    type: integer
+                    example: 15
+                  data:
+                    type: object
+                    properties:
+                      enrollments:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Enrollment'
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Access denied
+
+  /api/v1/enrollments/{enrollmentId}:
+    get:
+      summary: Get a specific enrollment
+      tags:
+        - Enrollments
+      operationId: getEnrollment
+      parameters:
+        - name: enrollmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Enrollment retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      enrollment:
+                        $ref: '#/components/schemas/Enrollment'
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "404":
+          description: Enrollment not found
+
+    patch:
+      summary: Update an enrollment
+      tags:
+        - Enrollments
+      operationId: updateEnrollment
+      parameters:
+        - name: enrollmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEnrollmentRequest'
+      responses:
+        "200":
+          description: Enrollment updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Enrollment updated successfully"
+                  data:
+                    type: object
+                    properties:
+                      enrollment:
+                        $ref: '#/components/schemas/Enrollment'
+        "400":
+          description: Bad request - Invalid data
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Only institute admins can update enrollments
+        "404":
+          description: Enrollment not found
+
+    put:
+      summary: Update an enrollment (alternative method)
+      tags:
+        - Enrollments
+      operationId: updateEnrollmentPut
+      parameters:
+        - name: enrollmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEnrollmentRequest'
+      responses:
+        "200":
+          description: Enrollment updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Enrollment updated successfully"
+                  data:
+                    type: object
+                    properties:
+                      enrollment:
+                        $ref: '#/components/schemas/Enrollment'
+        "400":
+          description: Bad request - Invalid data
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Only institute admins can update enrollments
+        "404":
+          description: Enrollment not found
+
+    delete:
+      summary: Delete an enrollment
+      tags:
+        - Enrollments
+      operationId: deleteEnrollment
+      parameters:
+        - name: enrollmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Enrollment deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Enrollment deleted successfully"
+        "401":
+          description: Unauthorized - Invalid or expired token
+        "403":
+          description: Forbidden - Only institute admins can delete enrollments
+        "404":
+          description: Enrollment not found
+
+components:
+  schemas:
+    Institute:
+      type: object
+      required:
+        - name
+        - city
+        - country
+        - updatedBy
+      properties:
+        instituteId:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        name:
+          type: string
+          example: "University of Technology"
+        houseNo:
+          type: string
+          nullable: true
+          example: "123"
+        street:
+          type: string
+          nullable: true
+          example: "Main Street"
+        postalCode:
+          type: string
+          nullable: true
+          example: "12345"
+        state:
+          type: string
+          nullable: true
+          example: "California"
+        city:
+          type: string
+          example: "San Francisco"
+        country:
+          type: string
+          example: "United States"
+        mobileNo1:
+          type: string
+          nullable: true
+          example: "+1234567890"
+        mobileNo2:
+          type: string
+          nullable: true
+          example: "+1234567891"
+        telephone1:
+          type: string
+          nullable: true
+          example: "+1234567892"
+        telephone2:
+          type: string
+          nullable: true
+          example: "+1234567893"
+        email:
+          type: string
+          format: email
+          nullable: true
+          example: "contact@university.edu"
+        web:
+          type: string
+          nullable: true
+          example: "https://www.university.edu"
+        updatedBy:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00Z"
+    UserDetails:
+      type: object
+      required:
+        - firstName
+        - lastName
+      properties:
+        userId:
+          type: string
+          example: "string"
+        firstName:
+          type: string
+          example: "string"
+        middleName:
+          type: string
+          example: "string"
+        lastName:
+          type: string
+          example: "string"
+        userType:
+          type: string
+          enum: [STUDENT, TEACHER, ADMIN, SUPERADMIN]
+          example: "STUDENT"
+        JoiningDate:
+          type: string
+          format: date
+        DateOfBirth:
+          type: string
+          format: date
+        houseNo:
+          type: string
+          example: "string"
+        street:
+          type: string
+          example: "string"
+        postalCode:
+          type: string
+          example: "string"
+        state:
+          type: string
+          example: "string"
+        city:
+          type: string
+          example: "string"
+        country:
+          type: string
+          example: "string"
+        primaryContactNo:
+          type: string
+          example: "string"
+        secondaryContactNo:
+          type: string
+          example: "string"
+        instituteId:
+          type: string
+          example: "string"
+        gender:
+          enum: [Male, Female, Divers, NotSpecified]
+          example: "MALE"
+          type: string
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+        updatedBy:
+          type: string
+          example: "string"
+
+    Course:
+      type: object
+      required:
+        - title
+      properties:
+        course_id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        title:
+          type: string
+          example: "Mathematics 101"
+        description:
+          type: string
+          example: "Introduction to basic mathematics concepts"
+        teacherId:
+          type: string
+          format: uuid
+          nullable: true
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        updatedBy:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+
+    Lesson:
+      type: object
+      required:
+        - courseId
+        - title
+        - lesson_type
+        - lessonUrl
+      properties:
+        lesson_id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        courseId:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        title:
+          type: string
+          maxLength: 100
+          example: "Introduction to Algebra"
+        lesson_type:
+          type: string
+          enum: [transcript, video, text]
+          example: "video"
+        lessonUrl:
+          type: string
+          format: uri
+          maxLength: 200
+          example: "https://example.com/lesson1"
+        status:
+          type: string
+          enum: [active, inactive]
+          default: active
+          example: "active"
+        position:
+          type: integer
+          minimum: 1
+          example: 1
+        hasExam:
+          type: boolean
+          default: false
+          example: false
+        userId:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        updatedBy:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00Z"
+        course:
+          $ref: "#/components/schemas/Course"
+        user:
+          type: object
+          properties:
+            user_id:
+              type: string
+              format: uuid
+            userName:
+              type: string
+            email:
+              type: string
+            role:
+              type: string
+
+    CreateLessonRequest:
+      type: object
+      required:
+        - courseId
+        - title
+        - lesson_type
+        - lessonUrl
+      properties:
+        courseId:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        title:
+          type: string
+          maxLength: 100
+          example: "Introduction to Algebra"
+        lesson_type:
+          type: string
+          enum: [transcript, video, text]
+          example: "video"
+        lessonUrl:
+          type: string
+          format: uri
+          maxLength: 200
+          example: "https://example.com/lesson1"
+        status:
+          type: string
+          enum: [active, inactive]
+          default: active
+          example: "active"
+        position:
+          type: integer
+          minimum: 1
+          example: 1
+        hasExam:
+          type: boolean
+          default: false
+          example: false
+
+    UpdateLessonRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 100
+          example: "Introduction to Algebra"
+        lesson_type:
+          type: string
+          enum: [transcript, video, text]
+          example: "video"
+        lessonUrl:
+          type: string
+          format: uri
+          maxLength: 200
+          example: "https://example.com/lesson1"
+        status:
+          type: string
+          enum: [active, inactive]
+          example: "active"
+        position:
+          type: integer
+          minimum: 1
+          example: 1
+        hasExam:
+          type: boolean
+          example: false
+
+    Enrollment:
+      type: object
+      properties:
+        enrollment_id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        studentId:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174001"
+        courseId:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174002"
+        enrolledAt:
+          type: string
+          format: date-time
+          example: "2023-01-15T10:30:00Z"
+        updatedBy:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174003"
+        user:
+          $ref: '#/components/schemas/User'
+        course:
+          $ref: '#/components/schemas/Course'
+
+    CreateEnrollmentRequest:
+      type: object
+      required:
+        - studentId
+        - courseId
+      properties:
+        studentId:
+          type: string
+          format: uuid
+          description: "UUID of the student to enroll"
+          example: "123e4567-e89b-12d3-a456-426614174001"
+        courseId:
+          type: string
+          format: uuid
+          description: "UUID of the course to enroll the student in"
+          example: "123e4567-e89b-12d3-a456-426614174002"
+
+    UpdateEnrollmentRequest:
+      type: object
+      properties:
+        studentId:
+          type: string
+          format: uuid
+          description: "UUID of the student (optional)"
+          example: "123e4567-e89b-12d3-a456-426614174001"
+        courseId:
+          type: string
+          format: uuid
+          description: "UUID of the course (optional)"
+          example: "123e4567-e89b-12d3-a456-426614174002"
+
+    User:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        userName:
+          type: string
+          example: "john_doe"
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        role:
+          type: string
+          enum: [admin, student, teacher, institute_admin]
+          example: "student"
+        status:
+          type: string
+          enum: [active, inactive]
+          example: "active"
+        verified:
+          type: boolean
+          example: true
+        instituteId:
+          type: string
+          format: uuid
+          nullable: true
+          example: "123e4567-e89b-12d3-a456-426614174001"
+        created_at:
+          type: string
+          format: date-time
+          example: "2023-01-15T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2023-01-15T10:30:00Z"
+        userDetails:
+          type: object
+          nullable: true
+          properties:
+            firstName:
+              type: string
+              example: "John"
+            lastName:
+              type: string
+              example: "Doe"
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
