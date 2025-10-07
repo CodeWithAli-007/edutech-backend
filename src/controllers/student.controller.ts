@@ -137,7 +137,7 @@ export const deleteStudentHandler = async (
   next: NextFunction
 ) => {
   try {
-    const student = await getStudent(req.params.userId);
+    const student = await getStudent(req.params.studentId);
 
     if (!student) {
       return next(new AppError(404, 'Student with that ID not found'));
